@@ -1,1 +1,73 @@
-<h1>Hola ayudadxs!</h1>
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WorkConnect · Tu próxima oportunidad</title>
+    <link rel="stylesheet" href="{% static 'workconnectapp/styles.css' %}">
+</head>
+<body>
+<header><a class="marca" href="{% url 'index' %}">◈ WorkConnect</a><span class="etiqueta">Prototipo académico</span></header>
+<main>
+    <section class="presentacion">
+        <p class="paso">TU PRIMER PASO, A TU RITMO</p>
+        <h1>Oportunidades que se adaptan <span>a ti.</span></h1>
+        <p>Cuéntanos tus intereses y cuándo puedes participar. Encuentra empleos, pasantías y cursos compatibles con tu perfil.</p>
+        <div class="aviso"><strong>Datos de demostración.</strong> Todas las oportunidades y sus contactos son ficticios. No son ofertas vigentes. Este formulario no guarda tus respuestas.</div>
+    </section>
+    <div class="contenido">
+        <section class="panel" aria-labelledby="titulo-perfil">
+            <p class="paso">01 / TU PERFIL</p><h2 id="titulo-perfil">Empecemos por ti</h2>
+            <p class="secundario">Todos los campos son obligatorios.</p>
+            <form method="post" action="{% url 'index' %}#resultados">
+                {% csrf_token %}
+                {% if formulario.errors %}<div class="error-resumen" role="alert">Revisa los campos indicados antes de buscar oportunidades.</div>{% endif %}
+                {{ formulario.non_field_errors }}
+                {% for campo in formulario %}
+                    <div class="campo">
+                        {% if campo.name == 'intereses' or campo.name == 'horarios' %}
+                            <fieldset><legend>{{ campo.label }}</legend>{{ campo }}
+                                <p class="ayuda">{{ campo.help_text }}</p>{{ campo.errors }}
+                            </fieldset>
+                        {% else %}
+                            <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>{{ campo }}{{ campo.errors }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit">Encontrar oportunidades →</button>
+            </form>
+        </section>
+        <section id="resultados" aria-labelledby="titulo-resultados" aria-live="polite">
+            <p class="paso">02 / TUS OPORTUNIDADES</p><h2 id="titulo-resultados">Un próximo paso posible</h2>
+            {% if procesado %}
+                <p class="secundario">{{ recomendaciones|length }} oportunidad{{ recomendaciones|length|pluralize:"es" }} compatible{{ recomendaciones|length|pluralize:"s" }}. Ordenadas por puntos de afinidad.</p>
+                {% for oferta in recomendaciones %}
+                    <article class="tarjeta">
+                        <div class="fila"><span class="etiqueta">{{ oferta.tipo }}</span><strong class="puntos">{{ oferta.puntos }} puntos de afinidad</strong></div>
+                        <h3>{{ oferta.titulo }}</h3>
+                        <p class="secundario">{{ oferta.comuna_nombre }} · {% if oferta.remota %}Remota{% else %}Presencial{% endif %}</p>
+                        <p>{{ oferta.descripcion }}</p>
+                        <h4>¿Por qué aparece para ti?</h4>
+                        <ul>{% for motivo in oferta.motivos %}<li>{{ motivo }}</li>{% endfor %}</ul>
+                        <p class="contacto"><strong>Contacto ficticio:</strong> {{ oferta.contacto }}</p>
+                        <span class="secundario">Ejemplo de demostración</span>
+                    </article>
+                {% empty %}
+                    <div class="estado" role="status"><h3>No encontramos oportunidades compatibles</h3><p>No hay ejemplos que cumplan todos tus requisitos y horarios. Puedes cambiar tus respuestas y volver a buscar.</p><p>Este resultado solo corresponde a nuestro catálogo ficticio.</p></div>
+                {% endfor %}
+            {% else %}
+                <div class="estado"><span class="simbolo" aria-hidden="true">✦</span><h3>Tu siguiente oportunidad empieza aquí</h3><p>Completa el formulario y pulsa «Encontrar oportunidades» para ver los resultados y las razones de cada recomendación.</p></div>
+            {% endif %}
+            <details><summary>Cómo seleccionamos las oportunidades</summary>
+                <p>Debes cumplir edad, experiencia y estudios mínimos, y coincidir con al menos un turno. Las presenciales deben estar en tu comuna; las remotas pueden estar en otra.</p>
+                <p>Orden de estudios: media en curso, media completa, superior en curso y superior completa.</p>
+                <p>Cada interés coincidente suma 2 puntos y la misma comuna suma 1 punto. No tener intereses en común no descarta oportunidades. En empates se utiliza el identificador del catálogo. Los puntos no son un porcentaje ni garantizan una selección laboral.</p>
+                <p>Los horarios son turnos alternativos. Basta con coincidir en uno. Mañana, tarde, noche y fines de semana son opciones independientes.</p>
+            </details>
+        </section>
+    </div>
+</main>
+<footer>WorkConnect · Empleabilidad juvenil · Demostración local en Django</footer>
+</body>
+</html>
