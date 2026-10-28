@@ -45,3 +45,63 @@ details { margin-top: 24px; font-size: 14px; }
 summary { cursor: pointer; font-weight: 650; }
 footer { font-size: 12px; color: #526b63; padding: 36px 0; margin-top: 30px; border-top: 1px solid var(--borde); }
 @media (max-width: 760px) { .contenido { grid-template-columns: 1fr; gap: 28px; } .presentacion { padding-top: 28px; } header .etiqueta { font-size: 10px; } .panel, .tarjeta { padding: 21px; } }
+
+/* Catálogo centrado; al abrir preferencias se organiza en dos columnas. */
+header, main, footer { width: min(1240px, 92%); }
+button { width: auto; font-size: 16px; }
+button[hidden], aside[hidden] { display: none; }
+.acciones-cabecera { display: flex; align-items: center; gap: 18px; }
+.presentacion { padding-top: 36px; max-width: 920px; }
+.presentacion h1 { font-size: clamp(32px, 4.5vw, 48px); }
+.paso { font-size: 13px; }
+.secundario, .ayuda, .aviso, .puntos, article ul, .reglas { font-size: 15px; }
+.etiqueta, .demo, footer { font-size: 14px; }
+.contenido { display: block; max-width: 1120px; margin: 0 auto; }
+.contenido.panel-abierto { display: grid; grid-template-columns: minmax(340px, .85fr) minmax(0, 1.35fr); gap: 32px; max-width: none; }
+.tarjetas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.panel-abierto .tarjetas { grid-template-columns: 1fr; }
+.tarjeta { margin: 0; padding: 28px; border-radius: 22px; box-shadow: 0 8px 26px #153e3808; }
+.panel { min-width: 0; }
+.panel .campo { display: block; }
+.panel .fila .paso { margin: 0; }
+.titulo-resultados { display: flex; gap: 18px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.titulo-resultados .paso { margin-top: 0; }
+.boton-texto { background: transparent; color: var(--verde); padding: 5px 0; font-size: 15px; text-decoration: underline; }
+.boton-texto:hover { background: transparent; color: #09513e; }
+.boton-secundario { background: #e7f3ee; color: #155c48; border: 1px solid #a8cbbd; padding: 10px 15px; }
+.boton-secundario:hover { background: #d1e8dd; }
+.boton-ancho { width: 100%; margin-top: 10px; }
+.filtro-experiencia { background: #e7f3ee; border-radius: 10px; padding: 12px; }
+.filtro-experiencia label { display: flex; align-items: flex-start; gap: 8px; font-weight: 500; }
+.filtro-experiencia input { margin-top: 4px; }
+.dia-horario { border: 1px solid var(--borde); border-radius: 12px; padding: 12px; margin-top: 12px; }
+fieldset .dia { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; padding: 0; }
+.dia > span:first-child { display: flex; align-items: center; gap: 8px; font-weight: 650; }
+.estado-dia { color: #526b63; font-size: 13px; }
+.horas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 8px; }
+.horas label { display: block; font-size: 14px; padding: 0 0 4px; }
+input[type="time"] { width: 100%; min-width: 0; padding: 8px; border: 1px solid #a5bdb1; border-radius: 7px; font: inherit; background: #fcfefc; color: var(--tinta); }
+input[readonly] { background: #eff3f0; color: #526b63; }
+.errorlist { padding-left: 18px; }
+.horarios-oferta { list-style: none; padding: 12px 14px; background: #f0f6f3; border-radius: 10px; }
+.experiencia { color: var(--verde); font-weight: 650; font-size: 15px; }
+.pie-tarjeta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border-top: 1px solid var(--borde); padding-top: 18px; margin-top: 20px; }
+.demo { color: #526b63; }
+dialog { width: min(480px, 92vw); max-height: 85vh; padding: 26px; border: 1px solid var(--borde); border-radius: 20px; color: var(--tinta); background: white; box-shadow: 0 20px 80px #153e3833; overflow: auto; }
+dialog::backdrop { background: #123c3880; }
+.enlace-contacto { display: block; color: var(--turquesa); overflow-wrap: anywhere; font-weight: 650; margin: 15px 0; }
+dialog .aviso { margin-top: 20px; }
+.tarjetas > .estado { grid-column: 1 / -1; margin-top: 0; }
+@media (max-width: 850px) {
+    .contenido.panel-abierto { grid-template-columns: 1fr; }
+    .panel { max-width: 100%; }
+    .acciones-cabecera .etiqueta { display: none; }
+}
+@media (max-width: 580px) {
+    .tarjetas { grid-template-columns: 1fr; }
+    .marca { font-size: 20px; }
+    #abrir-preferencias { padding: 11px; font-size: 14px; }
+    .acciones-cabecera { gap: 8px; }
+    .tarjeta, .panel { padding: 20px; }
+    header, main, footer { width: 94%; }
+}
