@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WorkConnect · Tu próxima oportunidad</title>
+    <link rel="stylesheet" href="{% static 'workconnectapp/styles.css' %}">
+    <script src="{% static 'workconnectapp/app.js' %}" defer></script>
+</head>
+<body>
+<header>
+    <a class="marca" href="{% url 'index' %}">◈ WorkConnect</a>
+    <div class="acciones-cabecera"><span class="etiqueta">Prototipo académico</span>
+        <button type="button" id="abrir-preferencias" aria-controls="preferencias" aria-expanded="{% if panel_abierto %}true{% else %}false{% endif %}" hidden>Tus preferencias</button>
+    </div>
+</header>
+<main>
+    <section class="presentacion">
+        <p class="paso">TU PRIMER PASO, A TU RITMO</p>
+        <h1>Explora hoy.<br><span>Encuentra tu próximo paso.</span></h1>
+        <p>Empleos, pasantías y cursos para empezar. Abre tus preferencias para descubrir cuáles se adaptan a tu perfil y a tus horarios.</p>
+        <div class="aviso"><strong>Catálogo de demostración.</strong> Las oportunidades, organizaciones y contactos son ficticios. No son vacantes vigentes. Tus preferencias no se guardan en una base de datos.</div>
+    </section>
+    <noscript><p class="aviso">Sin JavaScript puedes completar las preferencias aquí debajo. Los contactos están disponibles en «Ver contacto».</p><style>#preferencias[hidden] { display: block; } .contenido { display: grid; grid-template-columns: 1fr; }</style></noscript>
+    <div id="contenido" class="contenido{% if panel_abierto %} panel-abierto{% endif %}">
+        <aside id="preferencias" class="panel" aria-labelledby="titulo-perfil" {% if not panel_abierto %}hidden{% endif %}>
+            <div class="fila"><p class="paso">TU PERFIL</p><button type="button" id="cerrar-preferencias" class="boton-texto" hidden>Cerrar panel</button></div>
+            <h2 id="titulo-perfil">Tus preferencias</h2>
+            <p class="secundario">Completa el perfil y al menos un día disponible.</p>
+            <form id="formulario-perfil" method="post" action="{% url 'index' %}#resultados">
+                {% csrf_token %}
+                {% if mostrar_errores %}
+                    {% if formulario.errors %}<div class="error-resumen" role="alert">Revisa los campos indicados. No se han calculado recomendaciones.</div>{% endif %}
+                    {{ formulario.non_field_errors }}
+                {% endif %}
+                {% for campo in formulario %}
+                    {% if campo.name == 'comuna' or campo.name == 'edad' or campo.name == 'experiencia' or campo.name == 'estudios' %}
+                        <div class="campo"><label for="{{ campo.id_for_label }}">{{ campo.label }}</label>{{ campo }}{% if mostrar_errores %}{{ campo.errors }}{% endif %}</div>
+                    {% endif %}
+                {% endfor %}
+                <fieldset class="campo"><legend>{{ formulario.intereses.label }}</legend>{{ formulario.intereses }}<p class="ayuda">{{ formulario.intereses.help_text }}</p>{% if mostrar_errores %}{{ formulario.intereses.errors }}{% endif %}</fieldset>
+                <div class="campo filtro-experiencia"><label>{{ formulario.sin_experiencia }} {{ formulario.sin_experiencia.label }}</label></div>
+                <fieldset class="campo"><legend>Tu disponibilidad semanal</legend>
+                    <p class="ayuda">Marca tus días disponibles y completa desde/hasta en formato de 24 horas. Sin marcar = no disponible. Un intervalo por día, sin cruzar medianoche.</p>
+                    {% for fila in formulario.filas_horario %}
+                        <div class="dia-horario">
+                            <label class="dia"><span>{{ fila.disponible }} {{ fila.nombre }}</span><span class="estado-dia">No disponible</span></label>
+                            <div class="horas">
+                                <div><label for="{{ fila.inicio.id_for_label }}">Desde</label>{{ fila.inicio }}{% if mostrar_errores %}{{ fila.inicio.errors }}{% endif %}</div>
+                                <div><label for="{{ fila.fin.id_for_label }}">Hasta</label>{{ fila.fin }}{% if mostrar_errores %}{{ fila.fin.errors }}{% endif %}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <p class="ayuda">Todos los bloques de una oportunidad deben caber completos en tus intervalos del día correspondiente.</p>
+                </fieldset>
+                <button type="submit" name="accion" value="recomendar" class="boton-ancho">Encontrar oportunidades →</button>
+                <button type="submit" name="accion" value="catalogo" formnovalidate class="boton-secundario boton-ancho">Ver catálogo general</button>
+            </form>
+        </aside>
+        <section id="resultados" aria-labelledby="titulo-resultados">
+            <div class="titulo-resultados">
+                <div><p class="paso">{% if procesado %}SELECCIÓN PARA TI{% else %}EXPLORA LAS POSIBILIDADES{% endif %}</p>
+                    <h2 id="titulo-resultados">{% if procesado %}Tus recomendaciones{% else %}Catálogo general{% endif %}</h2>
+                </div>
+                {% if procesado %}<button type="submit" form="formulario-perfil" name="accion" value="catalogo" formnovalidate class="boton-secundario">Volver al catálogo</button>{% endif %}
+            </div>
+            <p class="secundario">{% if procesado %}{{ oportunidades|length }} oportunidades compatibles, ordenadas por afinidad.{% else %}Todas las oportunidades ficticias. Abre «Tus preferencias» para personalizar los resultados.{% endif %}</p>
+            <div class="tarjetas">
+                {% for oferta in oportunidades %}{% include 'workconnectapp/tarjeta.html' %}{% empty %}
+                    <div class="estado" role="status"><h3>No encontramos oportunidades compatibles</h3><p>Ningún ejemplo cumple todos tus requisitos y bloques horarios. Ajusta tus preferencias y vuelve a buscar.</p></div>
+                {% endfor %}
+            </div>
+            <details class="reglas"><summary>Cómo seleccionamos las oportunidades</summary>
+                <p>Descartamos las presenciales de otra comuna y las que no cumplen edad, experiencia o estudios mínimos. Los estudios se ordenan: media en curso, media completa, superior en curso, superior completa.</p>
+                <p>Cada bloque horario es obligatorio y debe estar completamente dentro de un intervalo disponible del mismo día. No basta con un solapamiento parcial. Sin horarios conocidos no se recomienda una oportunidad. No se admiten turnos que crucen medianoche.</p>
+                <p>«Sin experiencia» limita los resultados a oportunidades que exigen cero años. La experiencia nunca suma puntos. Cada interés compartido suma 2 puntos y la misma comuna suma 1 punto; no compartir intereses no descarta. Los empates se ordenan por identificador del catálogo. Son puntos, no porcentajes ni garantías de contratación.</p>
+            </details>
+        </section>
+    </div>
+</main>
+<footer>WorkConnect · Empleabilidad juvenil · Demostración local en Django</footer>
+</body>
+</html>

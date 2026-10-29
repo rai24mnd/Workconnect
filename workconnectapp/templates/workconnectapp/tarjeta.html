@@ -1,0 +1,19 @@
+<article class="tarjeta">
+    <div class="fila"><span class="etiqueta">{{ oferta.tipo }}</span>{% if procesado %}<strong class="puntos">{{ oferta.puntos }} puntos de afinidad</strong>{% endif %}</div>
+    <h3>{{ oferta.titulo }}</h3>
+    <p class="secundario">{{ oferta.comuna_nombre }} · {% if oferta.remota %}Remota{% else %}Presencial{% endif %}</p>
+    <ul class="horarios-oferta">{% for horario in oferta.horarios_texto %}<li>{{ horario }}</li>{% empty %}<li>Horario sin confirmar: no se puede recomendar.</li>{% endfor %}</ul>
+    <p class="experiencia">{% if oferta.experiencia_min == 0 %}Sin experiencia requerida{% else %}Experiencia mínima: {{ oferta.experiencia_min }} año{{ oferta.experiencia_min|pluralize:"s" }}{% endif %}</p>
+    <p>{{ oferta.descripcion }}</p>
+    {% if procesado %}<h4>¿Por qué aparece para ti?</h4><ul class="motivos">{% for motivo in oferta.motivos %}<li>{{ motivo }}</li>{% endfor %}</ul>{% endif %}
+    <div class="pie-tarjeta"><span class="demo">Ejemplo ficticio</span><button type="button" data-contacto="contacto-{{ oferta.id }}" class="boton-secundario" hidden>{% if oferta.tipo == 'Curso' %}Más información{% else %}Contactar{% endif %}</button></div>
+    <dialog id="contacto-{{ oferta.id }}" aria-labelledby="titulo-contacto-{{ oferta.id }}">
+        <div class="fila"><span class="etiqueta">Contacto ficticio</span><button type="button" data-cerrar-dialogo class="boton-texto">Cerrar</button></div>
+        <h3 id="titulo-contacto-{{ oferta.id }}">{{ oferta.contacto.empresa }}</h3>
+        <p>{{ oferta.contacto.persona }}</p><p>{{ oferta.titulo }}</p>
+        {% if oferta.contacto.email %}<a class="enlace-contacto" href="mailto:{{ oferta.contacto.email }}">{{ oferta.contacto.email }}</a>{% endif %}
+        {% if oferta.contacto.telefono %}<a class="enlace-contacto" href="tel:{{ oferta.contacto.telefono }}">{{ oferta.contacto.telefono }}</a>{% endif %}
+        <p class="aviso">Solo demostración. No es una empresa real ni una postulación. El enlace abre tu aplicación de correo o teléfono; WorkConnect no envía nada.</p>
+    </dialog>
+    <noscript><details><summary>Ver contacto ficticio</summary><p>{{ oferta.contacto.empresa }} · {{ oferta.contacto.persona }}</p>{% if oferta.contacto.email %}<a href="mailto:{{ oferta.contacto.email }}">{{ oferta.contacto.email }}</a>{% endif %}{% if oferta.contacto.telefono %}<a href="tel:{{ oferta.contacto.telefono }}">{{ oferta.contacto.telefono }}</a>{% endif %}</details></noscript>
+</article>
