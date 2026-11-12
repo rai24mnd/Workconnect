@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block titulo %}Tu cuenta{% endblock %} · WorkConnect</title>
+    <link rel="stylesheet" href="{% static 'workconnectapp/styles.css' %}?v=layout-2">
+    <script src="{% static 'workconnectapp/cuenta.js' %}" defer></script>
+</head>
+<body>
+<a class="saltar-contenido" href="#principal">Ir al contenido</a>
+<header class="barra-superior">
+    <a class="marca" href="{% url 'index' %}">◈ WorkConnect</a>
+    {% include 'workconnectapp/navegacion_cuenta.html' %}
+</header>
+<main id="principal" class="pagina-cuenta {% block clase_pagina %}{% endblock %}">
+    {% for mensaje in messages %}<p class="aviso" role="status">{{ mensaje }}</p>{% endfor %}
+    {% block contenido %}{% endblock %}
+</main>
+<footer>WorkConnect · Empleabilidad juvenil · Prototipo académico</footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>

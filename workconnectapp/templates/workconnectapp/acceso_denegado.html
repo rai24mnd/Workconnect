@@ -1,0 +1,9 @@
+{% extends 'workconnectapp/base_cuentas.html' %}
+{% block titulo %}Acceso no disponible{% endblock %}
+{% block contenido %}
+<section class="panel">
+    <h1>Acceso no disponible</h1>
+    <p>{{ mensaje }}</p>
+    <a href="{% url 'index' %}">Volver al catálogo público</a>
+</section>
+{% endblock %}

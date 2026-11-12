@@ -1,0 +1,16 @@
+{% if mostrar_errores %}
+    {% if formulario.errors %}<div class="error-resumen" role="alert">Revisa los campos indicados.</div>{% endif %}
+    {{ formulario.non_field_errors }}
+{% endif %}
+{% for campo in formulario %}
+    {% if campo.name == 'comuna' or campo.name == 'edad' or campo.name == 'experiencia' or campo.name == 'estudios' %}
+        <div class="campo"><label for="{{ campo.id_for_label }}">{{ campo.label }}</label>{{ campo }}{% if campo.help_text %}<p class="ayuda" id="{{ campo.auto_id }}_helptext">{{ campo.help_text }}</p>{% endif %}{% if mostrar_errores %}{{ campo.errors }}{% endif %}</div>
+    {% endif %}
+{% endfor %}
+<fieldset class="campo"><legend>{{ formulario.intereses.label }}</legend>{{ formulario.intereses }}<p class="ayuda" id="{{ formulario.intereses.auto_id }}_helptext">{{ formulario.intereses.help_text }}</p>{% if mostrar_errores %}{{ formulario.intereses.errors }}{% endif %}</fieldset>
+<div class="campo filtro-experiencia"><label>{{ formulario.sin_experiencia }} {{ formulario.sin_experiencia.label }}</label><p class="ayuda" id="{{ formulario.sin_experiencia.auto_id }}_helptext">Las ofertas con experiencia negociable o por confirmar solo pueden aparecer como pendientes.</p></div>
+<fieldset class="campo"><legend>Tu disponibilidad semanal</legend>
+    <p class="ayuda">Marca tus días disponibles y completa desde/hasta en formato de 24 horas. Sin marcar = no disponible. Un intervalo por día, sin cruzar medianoche.</p>
+    {% include 'workconnectapp/campos_horario.html' %}
+    <p class="ayuda">Un horario fijo exige todos sus bloques. Si hay varias opciones, basta una alternativa completa, sin mezclar opciones. El horario flexible requiere acuerdo con la empresa.</p>
+</fieldset>

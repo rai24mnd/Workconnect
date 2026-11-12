@@ -5,79 +5,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>WorkConnect · Tu próxima oportunidad</title>
-    <link rel="stylesheet" href="{% static 'workconnectapp/styles.css' %}">
-    <script src="{% static 'workconnectapp/app.js' %}" defer></script>
+    <link rel="stylesheet" href="{% static 'workconnectapp/styles.css' %}?v=layout-2">
+    <script src="{% static 'workconnectapp/app.js' %}?v=layout-2" defer></script>
+    <script src="{% static 'workconnectapp/cuenta.js' %}" defer></script>
 </head>
 <body>
-<header>
+<a class="saltar-contenido" href="#principal">Ir al contenido</a>
+<header class="barra-superior">
     <a class="marca" href="{% url 'index' %}">◈ WorkConnect</a>
     <div class="acciones-cabecera"><span class="etiqueta">Prototipo académico</span>
-        <button type="button" id="abrir-preferencias" aria-controls="preferencias" aria-expanded="{% if panel_abierto %}true{% else %}false{% endif %}" hidden>Tus preferencias</button>
+        {% include 'workconnectapp/navegacion_cuenta.html' %}
     </div>
 </header>
-<main>
+<main id="principal">
+    {% for mensaje in messages %}<p class="aviso" role="status">{{ mensaje }}</p>{% endfor %}
     <section class="presentacion">
         <p class="paso">TU PRIMER PASO, A TU RITMO</p>
         <h1>Explora hoy.<br><span>Encuentra tu próximo paso.</span></h1>
-        <p>Empleos, pasantías y cursos para empezar. Abre tus preferencias para descubrir cuáles se adaptan a tu perfil y a tus horarios.</p>
-        <div class="aviso"><strong>Catálogo de demostración.</strong> Las oportunidades, organizaciones y contactos son ficticios. No son vacantes vigentes. Tus preferencias no se guardan en una base de datos.</div>
+        <p>Empleos y prácticas para empezar. Descubre cuáles se adaptan a tu perfil y a tus horarios con tus preferencias guardadas.</p>
+        <div class="aviso"><strong>Prototipo académico.</strong> Las oportunidades señaladas como demostración, sus organizaciones y contactos son ficticios. No son vacantes vigentes.
+        </div>
+        {% if procesado %}<p class="aviso">Estas recomendaciones utilizan tus preferencias guardadas.</p>{% endif %}
+        <div class="acciones-panel">
+            <a class="boton-enlace" href="{% url 'recomendaciones_guardadas' %}">Ver mis recomendaciones</a>
+            <a class="boton-enlace boton-secundario" href="{% url 'mis_preferencias' %}">Editar mis preferencias</a>
+        </div>
     </section>
-    <noscript><p class="aviso">Sin JavaScript puedes completar las preferencias aquí debajo. Los contactos están disponibles en «Ver contacto».</p><style>#preferencias[hidden] { display: block; } .contenido { display: grid; grid-template-columns: 1fr; }</style></noscript>
-    <div id="contenido" class="contenido{% if panel_abierto %} panel-abierto{% endif %}">
-        <aside id="preferencias" class="panel" aria-labelledby="titulo-perfil" {% if not panel_abierto %}hidden{% endif %}>
-            <div class="fila"><p class="paso">TU PERFIL</p><button type="button" id="cerrar-preferencias" class="boton-texto" hidden>Cerrar panel</button></div>
-            <h2 id="titulo-perfil">Tus preferencias</h2>
-            <p class="secundario">Completa el perfil y al menos un día disponible.</p>
-            <form id="formulario-perfil" method="post" action="{% url 'index' %}#resultados">
-                {% csrf_token %}
-                {% if mostrar_errores %}
-                    {% if formulario.errors %}<div class="error-resumen" role="alert">Revisa los campos indicados. No se han calculado recomendaciones.</div>{% endif %}
-                    {{ formulario.non_field_errors }}
-                {% endif %}
-                {% for campo in formulario %}
-                    {% if campo.name == 'comuna' or campo.name == 'edad' or campo.name == 'experiencia' or campo.name == 'estudios' %}
-                        <div class="campo"><label for="{{ campo.id_for_label }}">{{ campo.label }}</label>{{ campo }}{% if mostrar_errores %}{{ campo.errors }}{% endif %}</div>
-                    {% endif %}
-                {% endfor %}
-                <fieldset class="campo"><legend>{{ formulario.intereses.label }}</legend>{{ formulario.intereses }}<p class="ayuda">{{ formulario.intereses.help_text }}</p>{% if mostrar_errores %}{{ formulario.intereses.errors }}{% endif %}</fieldset>
-                <div class="campo filtro-experiencia"><label>{{ formulario.sin_experiencia }} {{ formulario.sin_experiencia.label }}</label></div>
-                <fieldset class="campo"><legend>Tu disponibilidad semanal</legend>
-                    <p class="ayuda">Marca tus días disponibles y completa desde/hasta en formato de 24 horas. Sin marcar = no disponible. Un intervalo por día, sin cruzar medianoche.</p>
-                    {% for fila in formulario.filas_horario %}
-                        <div class="dia-horario">
-                            <label class="dia"><span>{{ fila.disponible }} {{ fila.nombre }}</span><span class="estado-dia">No disponible</span></label>
-                            <div class="horas">
-                                <div><label for="{{ fila.inicio.id_for_label }}">Desde</label>{{ fila.inicio }}{% if mostrar_errores %}{{ fila.inicio.errors }}{% endif %}</div>
-                                <div><label for="{{ fila.fin.id_for_label }}">Hasta</label>{{ fila.fin }}{% if mostrar_errores %}{{ fila.fin.errors }}{% endif %}</div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                    <p class="ayuda">Todos los bloques de una oportunidad deben caber completos en tus intervalos del día correspondiente.</p>
-                </fieldset>
-                <button type="submit" name="accion" value="recomendar" class="boton-ancho">Encontrar oportunidades →</button>
-                <button type="submit" name="accion" value="catalogo" formnovalidate class="boton-secundario boton-ancho">Ver catálogo general</button>
-            </form>
-        </aside>
+    <div id="contenido" class="contenido">
         <section id="resultados" aria-labelledby="titulo-resultados">
+            {% if not procesado %}{% include 'workconnectapp/busqueda.html' %}{% endif %}
             <div class="titulo-resultados">
                 <div><p class="paso">{% if procesado %}SELECCIÓN PARA TI{% else %}EXPLORA LAS POSIBILIDADES{% endif %}</p>
-                    <h2 id="titulo-resultados">{% if procesado %}Tus recomendaciones{% else %}Catálogo general{% endif %}</h2>
+                    <h2 id="titulo-resultados">{% if procesado %}Tus recomendaciones{% elif busqueda_activa %}Resultados de búsqueda{% else %}Catálogo general{% endif %}</h2>
                 </div>
-                {% if procesado %}<button type="submit" form="formulario-perfil" name="accion" value="catalogo" formnovalidate class="boton-secundario">Volver al catálogo</button>{% endif %}
+                {% if procesado %}<a class="boton-enlace boton-secundario" href="{% url 'index' %}">Volver al catálogo</a>{% endif %}
             </div>
-            <p class="secundario">{% if procesado %}{{ oportunidades|length }} oportunidades compatibles, ordenadas por afinidad.{% else %}Todas las oportunidades ficticias. Abre «Tus preferencias» para personalizar los resultados.{% endif %}</p>
+            {% if procesado %}<h3 class="subtitulo-grupo">Compatibles con tu perfil</h3>{% endif %}
+            {% if not procesado %}
+                {% if busqueda_form.errors %}<p class="error-resumen" role="alert">Revisa los filtros indicados para realizar la búsqueda.</p>
+                {% else %}<p role="status">{{ oportunidades|length }} resultado{{ oportunidades|length|pluralize:"s" }} encontrado{{ oportunidades|length|pluralize:"s" }}. {% if perfil_evaluado %}Cada oferta indica su compatibilidad con tus preferencias guardadas.{% else %}Compatibilidad sin evaluar: <a href="{% url 'mis_preferencias' %}">completa tus preferencias</a>.{% endif %}</p>{% endif %}
+            {% endif %}
+            <p class="secundario">{% if procesado %}{{ oportunidades|length }} oportunidad{{ oportunidades|length|pluralize:"es" }} compatible{{ oportunidades|length|pluralize:"s" }}, por afinidad. El puntaje refleja coincidencias; no garantiza contratación.{% else %}Explora las oportunidades del catálogo o consulta tus recomendaciones personalizadas.{% endif %}</p>
             <div class="tarjetas">
                 {% for oferta in oportunidades %}{% include 'workconnectapp/tarjeta.html' %}{% empty %}
-                    <div class="estado" role="status"><h3>No encontramos oportunidades compatibles</h3><p>Ningún ejemplo cumple todos tus requisitos y bloques horarios. Ajusta tus preferencias y vuelve a buscar.</p></div>
+                    <div class="estado" role="status">{% if procesado %}{% if pendientes %}<h3>No hay compatibilidad confirmada</h3><p>Revisa las oportunidades pendientes de confirmar que aparecen a continuación.</p>{% else %}<h3>No encontramos oportunidades compatibles</h3><p>Ninguna oportunidad cumple todos tus requisitos y bloques horarios. Accede a <a href="{% url 'mis_preferencias' %}">Editar mis preferencias</a> para revisar comuna, requisitos y disponibilidad, o vuelve al catálogo.</p>{% endif %}{% elif busqueda_form.errors %}<h3>Filtros inválidos</h3><p>Corrige los campos señalados y vuelve a aplicar los filtros.</p>{% elif busqueda_activa %}<h3>No encontramos resultados</h3><p>Prueba otras palabras o limpia los filtros para ampliar tu búsqueda.</p>{% else %}<h3>No hay oportunidades publicadas</h3><p>El catálogo está vacío. Vuelve cuando haya nuevas publicaciones.</p>{% endif %}</div>
                 {% endfor %}
             </div>
+            {% if procesado and pendientes %}
+                <section class="seccion-pendientes" aria-labelledby="titulo-pendientes">
+                    <h2 id="titulo-pendientes">Pendientes de confirmar</h2>
+                    <p class="aviso">{{ pendientes|length }} oportunidad{{ pendientes|length|pluralize:"es" }} por confirmar, ordenadas por afinidad. Podrían ser adecuadas, pero necesitan acuerdo o confirmación con la empresa. No son compatibilidades confirmadas.</p>
+                    <div class="tarjetas">{% for oferta in pendientes %}{% include 'workconnectapp/tarjeta.html' %}{% endfor %}</div>
+                </section>
+            {% endif %}
             <details class="reglas"><summary>Cómo seleccionamos las oportunidades</summary>
                 <p>Descartamos las presenciales de otra comuna y las que no cumplen edad, experiencia o estudios mínimos. Los estudios se ordenan: media en curso, media completa, superior en curso, superior completa.</p>
-                <p>Cada bloque horario es obligatorio y debe estar completamente dentro de un intervalo disponible del mismo día. No basta con un solapamiento parcial. Sin horarios conocidos no se recomienda una oportunidad. No se admiten turnos que crucen medianoche.</p>
-                <p>«Sin experiencia» limita los resultados a oportunidades que exigen cero años. La experiencia nunca suma puntos. Cada interés compartido suma 2 puntos y la misma comuna suma 1 punto; no compartir intereses no descarta. Los empates se ordenan por identificador del catálogo. Son puntos, no porcentajes ni garantías de contratación.</p>
+                <p>En horarios fijos, cada bloque es obligatorio y debe estar completamente dentro de un intervalo disponible del mismo día. En varias opciones, debes cumplir al menos una alternativa completa: nunca mezclamos bloques de distintas alternativas. No basta con un solapamiento parcial ni se admiten turnos que crucen medianoche. Los horarios flexibles requieren acuerdo con la empresa.</p>
+                <p>Los requisitos no exigidos se consideran cumplidos; los específicos se comparan con tu perfil. Los requisitos negociables o por confirmar se muestran como pendientes, siempre que no exista otro incumplimiento conocido.</p>
+                <p>«Sin experiencia» confirma únicamente ofertas que no la exigen. Si la experiencia es negociable o desconocida, la oferta solo puede aparecer como pendiente. La experiencia nunca suma puntos. Cada interés compartido suma 2 puntos y la misma comuna suma 1 punto; no compartir intereses no descarta. Compatibles y pendientes se ordenan por separado y los empates se resuelven por identificador. Son puntos, no porcentajes ni garantías de contratación.</p>
             </details>
         </section>
     </div>
+    <section id="capacitacion-sence" class="capacitacion" aria-labelledby="titulo-capacitacion">
+        <p class="paso">FORMACIÓN COMPLEMENTARIA</p>
+        <h2 id="titulo-capacitacion">Explora opciones de capacitación</h2>
+        <p>SENCE permite explorar cursos y oportunidades de capacitación. Es un recurso complementario externo; WorkConnect no importa ni recomienda automáticamente sus cursos.</p>
+        <a class="boton-enlace" href="https://eligetucurso.sence.cl/" target="_blank" rel="noopener noreferrer">Explorar cursos en SENCE</a>
+        <p class="ayuda">Recurso externo: abre el buscador oficial de capacitaciones en otra pestaña.</p>
+    </section>
 </main>
 <footer>WorkConnect · Empleabilidad juvenil · Demostración local en Django</footer>
 </body>

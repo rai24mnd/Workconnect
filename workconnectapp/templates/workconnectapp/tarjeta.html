@@ -1,19 +1,34 @@
-<article class="tarjeta">
+<article class="tarjeta{% if oferta.estado == 'pendiente' %} tarjeta-pendiente{% elif oferta.estado == 'incompatible' %} tarjeta-incompatible{% elif oferta.estado == 'compatible' %} tarjeta-compatible{% endif %}">
     <div class="fila"><span class="etiqueta">{{ oferta.tipo }}</span>{% if procesado %}<strong class="puntos">{{ oferta.puntos }} puntos de afinidad</strong>{% endif %}</div>
     <h3>{{ oferta.titulo }}</h3>
-    <p class="secundario">{{ oferta.comuna_nombre }} · {% if oferta.remota %}Remota{% else %}Presencial{% endif %}</p>
-    <ul class="horarios-oferta">{% for horario in oferta.horarios_texto %}<li>{{ horario }}</li>{% empty %}<li>Horario sin confirmar: no se puede recomendar.</li>{% endfor %}</ul>
-    <p class="experiencia">{% if oferta.experiencia_min == 0 %}Sin experiencia requerida{% else %}Experiencia mínima: {{ oferta.experiencia_min }} año{{ oferta.experiencia_min|pluralize:"s" }}{% endif %}</p>
-    <p>{{ oferta.descripcion }}</p>
+    <p class="secundario"><strong>Empresa:</strong> {{ oferta.contacto.empresa|default:"No informada" }}</p>
+    <p><strong>Sueldo:</strong> {{ oferta.remuneracion_texto }}</p>
+    {% if oferta.estado == 'pendiente' %}<p class="etiqueta etiqueta-pendiente">Pendiente de confirmar</p>{% elif oferta.estado == 'compatible' %}<p class="etiqueta">Compatible con tu perfil</p>{% elif oferta.estado == 'incompatible' %}<p class="etiqueta">Incompatible con tu perfil</p><ul>{% for motivo in oferta.incumplimientos %}<li>{{ motivo }}</li>{% endfor %}</ul>{% endif %}
+    <p class="secundario">{{ oferta.comuna_nombre }} · {{ oferta.modalidad_laboral_texto }}</p>
+    {% if oferta.modalidad_horario == 'varias_opciones' %}
+        {% for alternativa in oferta.alternativas %}<div class="horarios-oferta">
+            <strong>Alternativa {{ alternativa.numero }}{% if procesado and alternativa.compatible %} · Compatible con tu disponibilidad{% endif %}</strong>
+            <ul>{% for horario in alternativa.horarios_texto %}<li>{{ horario }}</li>{% endfor %}</ul>
+        </div>{% endfor %}
+    {% else %}
+        <ul class="horarios-oferta">{% for horario in oferta.horarios_texto %}<li>{{ horario }}</li>{% empty %}<li>{% if oferta.modalidad_horario == 'flexible' %}Horario negociable: consultar disponibilidad con la empresa{% else %}Horario incompleto: no se puede recomendar.{% endif %}</li>{% endfor %}</ul>
+    {% endif %}
+    {% if oferta.descripcion_horario %}<p>{{ oferta.descripcion_horario }}</p>{% endif %}
+    <p class="experiencia">{% if oferta.experiencia_estado == 'no_requerido' %}Sin experiencia requerida{% elif oferta.experiencia_estado == 'especifico' %}Experiencia mínima: {{ oferta.experiencia_min }} año{{ oferta.experiencia_min|pluralize:"s" }}{% else %}Experiencia: {{ oferta.experiencia_estado_texto|lower }}{% endif %}</p>
+    <p class="secundario">{% if oferta.estudios_estado == 'no_requerido' %}Sin estudios mínimos requeridos{% elif oferta.estudios_estado == 'especifico' %}Estudios mínimos: {{ oferta.estudios_min_texto }}{% else %}Estudios: {{ oferta.estudios_estado_texto|lower }}{% endif %} · {% if oferta.edad_min %}Edad mínima: {{ oferta.edad_min }} años{% else %}Edad mínima por confirmar{% endif %}</p>
+    <h4>Descripción y funciones del cargo</h4><p>{{ oferta.descripcion }}</p>
+    {% if oferta.estado == 'pendiente' %}<div class="condiciones-pendientes"><h4>Condiciones que debes confirmar</h4><ul>{% for condicion in oferta.pendientes %}<li>{{ condicion }}</li>{% endfor %}</ul></div>{% endif %}
     {% if procesado %}<h4>¿Por qué aparece para ti?</h4><ul class="motivos">{% for motivo in oferta.motivos %}<li>{{ motivo }}</li>{% endfor %}</ul>{% endif %}
-    <div class="pie-tarjeta"><span class="demo">Ejemplo ficticio</span><button type="button" data-contacto="contacto-{{ oferta.id }}" class="boton-secundario" hidden>{% if oferta.tipo == 'Curso' %}Más información{% else %}Contactar{% endif %}</button></div>
+    <div class="pie-tarjeta">{% if oferta.es_demo %}<span class="demo">Ejemplo ficticio</span>{% endif %}<button type="button" data-contacto="contacto-{{ oferta.id }}" class="boton-secundario" hidden>Contactar</button></div>
     <dialog id="contacto-{{ oferta.id }}" aria-labelledby="titulo-contacto-{{ oferta.id }}">
-        <div class="fila"><span class="etiqueta">Contacto ficticio</span><button type="button" data-cerrar-dialogo class="boton-texto">Cerrar</button></div>
+        <div class="fila"><span class="etiqueta">{% if oferta.es_demo %}Contacto ficticio{% else %}Contacto{% endif %}</span><button type="button" data-cerrar-dialogo class="boton-texto">Cerrar</button></div>
         <h3 id="titulo-contacto-{{ oferta.id }}">{{ oferta.contacto.empresa }}</h3>
         <p>{{ oferta.contacto.persona }}</p><p>{{ oferta.titulo }}</p>
         {% if oferta.contacto.email %}<a class="enlace-contacto" href="mailto:{{ oferta.contacto.email }}">{{ oferta.contacto.email }}</a>{% endif %}
         {% if oferta.contacto.telefono %}<a class="enlace-contacto" href="tel:{{ oferta.contacto.telefono }}">{{ oferta.contacto.telefono }}</a>{% endif %}
-        <p class="aviso">Solo demostración. No es una empresa real ni una postulación. El enlace abre tu aplicación de correo o teléfono; WorkConnect no envía nada.</p>
+        {% if oferta.contacto.url %}<a class="enlace-contacto" href="{{ oferta.contacto.url }}">Ver método de postulación</a>{% endif %}
+        {% if oferta.contacto.instrucciones %}<p>{{ oferta.contacto.instrucciones }}</p>{% endif %}
+        <p class="aviso">{% if oferta.es_demo %}Solo demostración. No es una empresa real ni una postulación. {% endif %}Los enlaces abren el contacto o método de postulación indicado; WorkConnect no envía mensajes.</p>
     </dialog>
-    <noscript><details><summary>Ver contacto ficticio</summary><p>{{ oferta.contacto.empresa }} · {{ oferta.contacto.persona }}</p>{% if oferta.contacto.email %}<a href="mailto:{{ oferta.contacto.email }}">{{ oferta.contacto.email }}</a>{% endif %}{% if oferta.contacto.telefono %}<a href="tel:{{ oferta.contacto.telefono }}">{{ oferta.contacto.telefono }}</a>{% endif %}</details></noscript>
+    <noscript><details><summary>Ver contacto{% if oferta.es_demo %} ficticio{% endif %}</summary><p>{{ oferta.contacto.empresa }} · {{ oferta.contacto.persona }}</p>{% if oferta.contacto.email %}<a href="mailto:{{ oferta.contacto.email }}">{{ oferta.contacto.email }}</a>{% endif %}{% if oferta.contacto.telefono %}<a href="tel:{{ oferta.contacto.telefono }}">{{ oferta.contacto.telefono }}</a>{% endif %}{% if oferta.contacto.url %}<a href="{{ oferta.contacto.url }}">Ver método de postulación</a>{% endif %}{% if oferta.contacto.instrucciones %}<p>{{ oferta.contacto.instrucciones }}</p>{% endif %}</details></noscript>
 </article>

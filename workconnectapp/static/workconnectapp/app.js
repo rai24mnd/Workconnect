@@ -1,28 +1,4 @@
 // Solo controla la presentación. Django calcula todas las recomendaciones.
-const panel = document.getElementById("preferencias");
-const contenido = document.getElementById("contenido");
-const abrir = document.getElementById("abrir-preferencias");
-const cerrar = document.getElementById("cerrar-preferencias");
-abrir.hidden = false;
-cerrar.hidden = false;
-
-function mostrarPreferencias(mostrar) {
-    panel.hidden = !mostrar;
-    contenido.classList.toggle("panel-abierto", mostrar);
-    abrir.setAttribute("aria-expanded", String(mostrar));
-    if (mostrar) {
-        panel.querySelector("select").focus({ preventScroll: true });
-        panel.scrollIntoView({ block: "start" });
-    } else {
-        abrir.focus({ preventScroll: true });
-    }
-}
-abrir.addEventListener("click", () => mostrarPreferencias(panel.hidden));
-cerrar.addEventListener("click", () => mostrarPreferencias(false));
-panel.addEventListener("keydown", (evento) => {
-    if (evento.key === "Escape") mostrarPreferencias(false);
-});
-
 document.querySelectorAll(".dia-horario").forEach((fila) => {
     const disponible = fila.querySelector('input[type="checkbox"]');
     const horas = fila.querySelectorAll('input[type="time"]');
@@ -52,3 +28,24 @@ document.querySelectorAll("[data-contacto]").forEach((boton) => {
             evento.clientY < limites.top || evento.clientY > limites.bottom) dialogo.close();
     });
 });
+
+// Sin JavaScript los filtros quedan visibles y el formulario GET sigue funcionando.
+const botonFiltros = document.querySelector("[data-alternar-filtros]");
+const panelFiltros = document.getElementById("panel-filtros");
+if (botonFiltros && panelFiltros) {
+    function mostrarFiltros(abierto) {
+        panelFiltros.hidden = !abierto;
+        botonFiltros.setAttribute("aria-expanded", String(abierto));
+    }
+    mostrarFiltros(panelFiltros.dataset.abierto === "true");
+    botonFiltros.hidden = false;
+    botonFiltros.addEventListener("click", () => mostrarFiltros(panelFiltros.hidden));
+    panelFiltros.addEventListener("invalid", () => mostrarFiltros(true), true);
+    panelFiltros.addEventListener("keydown", (evento) => {
+        if (evento.key === "Escape") {
+            mostrarFiltros(false);
+            botonFiltros.focus();
+            evento.preventDefault();
+        }
+    });
+}

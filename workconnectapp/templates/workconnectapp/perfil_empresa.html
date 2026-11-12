@@ -1,0 +1,12 @@
+{% extends 'workconnectapp/base_cuentas.html' %}
+{% block titulo %}Perfil empresarial{% endblock %}
+{% block contenido %}
+<section class="panel">
+    <h1>Perfil empresarial</h1>
+    <p>Estos datos identifican a tu empresa. El contacto será público.</p>
+    <form method="post">{% csrf_token %}{% include 'workconnectapp/campos_cuenta.html' %}
+        <button type="submit">Guardar perfil</button>
+    </form>
+    <p><a href="{% url 'panel_empresa' %}">Volver al panel empresarial</a></p>
+</section>
+{% endblock %}

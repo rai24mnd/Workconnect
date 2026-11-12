@@ -1,4 +1,4 @@
-"""Catálogo ficticio: no son vacantes ni cursos vigentes."""
+"""Ofertas laborales de demostración: no son vacantes vigentes."""
 
 # Cada opción relaciona la clave que usa Python con el nombre que muestra Django.
 COMUNAS = [
@@ -10,6 +10,19 @@ INTERESES = [
     ("tecnologia", "Tecnología"),
     ("administracion", "Administración"),
     ("ventas", "Ventas"),
+    ("retail", "Comercio y retail"),
+    ("reposicion_caja", "Reposición y caja"),
+    ("gastronomia", "Gastronomía, cocina y garzonería"),
+    ("turismo_hoteleria", "Turismo y hotelería"),
+    ("logistica", "Bodega y logística"),
+    ("reparto", "Reparto"),
+    ("diseno_marketing", "Diseño y marketing"),
+    ("educacion", "Educación"),
+    ("cuidados", "Cuidado de personas"),
+    ("limpieza_mantencion", "Limpieza y mantención"),
+    ("construccion_produccion", "Construcción y producción"),
+    ("eventos", "Eventos"),
+    ("practicas", "Prácticas profesionales"),
 ]
 DIAS = [
     ("lunes", "Lunes"),
@@ -54,26 +67,6 @@ OPORTUNIDADES = [
         },
     },
     {
-        "id": 2,
-        "titulo": "Introducción al desarrollo web",
-        "tipo": "Curso",
-        "comuna": "vina",
-        "remota": True,
-        "edad_min": 16,
-        "experiencia_min": 0,
-        "estudios_min": "media_en_curso",
-        "intereses": ["tecnologia"],
-        "horarios": [
-            {"dia": "lunes", "inicio": "20:00", "fin": "22:00"},
-        ],
-        "descripcion": "Curso ficticio para dar los primeros pasos en HTML y Python.",
-        "contacto": {
-            "empresa": "Aula Semilla (ficticia)",
-            "persona": "Inscripciones al curso web",
-            "email": "curso-web@example.com",
-        },
-    },
-    {
         "id": 3,
         "titulo": "Asistente de oficina",
         "tipo": "Empleo",
@@ -111,26 +104,6 @@ OPORTUNIDADES = [
             "empresa": "Tienda Turquesa (ficticia)",
             "persona": "Equipo de postulaciones",
             "email": "tienda@example.com",
-        },
-    },
-    {
-        "id": 5,
-        "titulo": "Herramientas digitales para oficinas",
-        "tipo": "Curso",
-        "comuna": "valparaiso",
-        "remota": True,
-        "edad_min": 16,
-        "experiencia_min": 0,
-        "estudios_min": "media_en_curso",
-        "intereses": ["tecnologia", "administracion"],
-        "horarios": [
-            {"dia": "lunes", "inicio": "09:00", "fin": "11:00"},
-        ],
-        "descripcion": "Ejemplo de capacitación inicial en planillas y organización digital.",
-        "contacto": {
-            "empresa": "Escuela Raíz (ficticia)",
-            "persona": "Inscripciones a herramientas digitales",
-            "email": "herramientas@example.com",
         },
     },
     {

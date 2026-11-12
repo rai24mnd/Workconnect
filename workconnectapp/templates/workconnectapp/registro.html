@@ -1,0 +1,34 @@
+{% extends 'workconnectapp/base_cuentas.html' %}
+{% load static %}
+{% block titulo %}Crear cuenta{% endblock %}
+{% block contenido %}
+<section class="panel">
+    <h1>Crear cuenta</h1>
+    {% if mostrar_formulario %}
+    <p>{% if mostrar_preferencias %}<strong>Busco oportunidades.</strong> Completa tus datos de acceso y tus preferencias para recibir recomendaciones desde tu primer inicio de sesión.{% elif tipo_seleccionado == 'empresa' %}<strong>Represento a una empresa.</strong> Crea tu cuenta para acceder al panel empresarial y completar el perfil de tu empresa.{% else %}Selecciona un tipo de cuenta para continuar.{% endif %}</p>
+    <p><a href="{% url 'registro' %}">Cambiar tipo de cuenta</a></p>
+    <form method="post" action="{% url 'registro' %}">
+        {% csrf_token %}
+        {% include 'workconnectapp/campos_cuenta.html' with ocultar_tipo=tipo_seleccionado %}
+        {% if mostrar_preferencias %}
+            <h2>Tus preferencias iniciales</h2>
+            <p>Indica tus intereses y al menos un día disponible con su rango horario. Podrás editar todo después en «Editar mis preferencias».</p>
+            {% include 'workconnectapp/campos_perfil.html' with formulario=formulario_perfil %}
+        {% endif %}
+        <button type="submit" class="boton-ancho">Crear cuenta</button>
+    </form>
+    {% else %}
+    <p>Elige el tipo de cuenta que te corresponde.</p>
+    <form method="get" action="{% url 'registro' %}">
+        <fieldset class="campo">
+            <legend>{{ formulario.tipo.label }}</legend>
+            {{ formulario.tipo }}
+            <p class="ayuda">{{ formulario.tipo.help_text }}</p>
+        </fieldset>
+        <button type="submit" class="boton-ancho">Continuar</button>
+    </form>
+    {% endif %}
+    <p>¿Ya tienes cuenta? <a href="{% url 'iniciar_sesion' %}">Inicia sesión</a>.</p>
+</section>
+{% endblock %}
+{% block scripts %}{% if mostrar_preferencias %}<script src="{% static 'workconnectapp/app.js' %}"></script>{% endif %}{% endblock %}

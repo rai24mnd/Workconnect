@@ -1,0 +1,28 @@
+{% extends 'workconnectapp/base_cuentas.html' %}
+{% block titulo %}Mi perfil{% endblock %}
+{% block contenido %}
+<section class="panel">
+    <h1>Mi perfil</h1>
+    <p>Estos son los datos que utilizamos para recomendarte oportunidades.</p>
+    <dl class="datos-perfil">
+        <dt>Nombre de usuario</dt><dd>{{ user.username }}</dd>
+        <dt>Comuna</dt><dd>{{ perfil.get_comuna_display|default:"Sin completar" }}</dd>
+        <dt>Edad</dt><dd>{{ perfil.edad|default_if_none:"Sin completar" }}</dd>
+        <dt>Años completos de experiencia laboral</dt><dd>{{ perfil.experiencia|default_if_none:"Sin completar" }}</dd>
+        <dt>Nivel de estudios</dt><dd>{{ perfil.get_estudios_display|default:"Sin completar" }}</dd>
+        <dt>Intereses laborales</dt>
+        <dd>{% for interes in perfil.intereses.all %}{{ interes.nombre }}{% if not forloop.last %}, {% endif %}{% empty %}Sin completar{% endfor %}</dd>
+        <dt>Mostrar solo oportunidades sin experiencia requerida</dt><dd>{{ perfil.sin_experiencia|yesno:"Sí,No" }}</dd>
+    </dl>
+    <h2>Mi disponibilidad semanal</h2>
+    <dl class="datos-perfil disponibilidad-perfil">
+        {% for fila in filas_disponibilidad %}
+            <dt>{{ fila.nombre }}</dt>
+            <dd>{% if fila.inicio %}{{ fila.inicio|time:"H:i" }}–{{ fila.fin|time:"H:i" }}{% else %}No disponible{% endif %}</dd>
+        {% endfor %}
+    </dl>
+    <p><a class="boton-enlace" href="{% url 'mis_preferencias' %}">Editar mis preferencias</a></p>
+    <p class="ayuda">Puedes cambiar todos tus datos, intereses y disponibilidad semanal desde tus preferencias.</p>
+    <p><a href="{% url 'recomendaciones_guardadas' %}">Ver mis recomendaciones</a></p>
+</section>
+{% endblock %}

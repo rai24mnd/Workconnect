@@ -1,0 +1,9 @@
+    {% for fila in formulario.filas_horario %}
+        <div class="dia-horario">
+            <label class="dia"><span>{{ fila.disponible }} {{ fila.nombre }}</span><span class="estado-dia">No disponible</span></label>
+            <div class="horas">
+                <div><label for="{{ fila.inicio.id_for_label }}">Desde</label>{{ fila.inicio }}{% if mostrar_errores %}{{ fila.inicio.errors }}{% endif %}</div>
+                <div><label for="{{ fila.fin.id_for_label }}">Hasta</label>{{ fila.fin }}{% if mostrar_errores %}{{ fila.fin.errors }}{% endif %}</div>
+            </div>
+        </div>
+    {% endfor %}

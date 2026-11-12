@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
+"""Ejecutar comandos de Django: migrate, check, runserver, entre otros."""
 import os
 import sys
 
 def main():
-    """Run administrative tasks."""
+    """Cargar settings.py y entregar a Django el comando escrito en la terminal."""
+    # setdefault usa esta configuración si no se indicó otra mediante el entorno.
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'workconnect.settings')
     try:
         from django.core.management import execute_from_command_line
@@ -17,4 +18,4 @@ def main():
     execute_from_command_line(sys.argv)
 
 if __name__ == '__main__':
-    main()  
+    main()

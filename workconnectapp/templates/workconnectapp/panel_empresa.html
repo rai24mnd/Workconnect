@@ -1,0 +1,24 @@
+{% extends 'workconnectapp/base_cuentas.html' %}
+{% block titulo %}Panel empresarial{% endblock %}
+{% block clase_pagina %}pagina-empresa{% endblock %}
+{% block contenido %}
+<section class="panel">
+    <h1>Panel empresarial</h1>
+    <p>Bienvenido, {{ user.username }}.</p>
+    {% if empresa.nombre %}<p>{{ empresa.nombre }}</p>{% endif %}
+    <div class="acciones-panel"><a class="boton-enlace" href="{% url 'perfil_empresa' %}">Completar o editar perfil empresarial</a>
+    <a class="boton-enlace boton-secundario" href="{% url 'crear_oferta' %}">Publicar empleo o práctica</a></div>
+    <p class="ayuda">Completa nombre, comuna y contacto público antes de publicar. Aquí solo aparecen tus ofertas.</p>
+    <h2>Mis publicaciones</h2>
+    <div class="publicaciones-empresa">
+    {% for oferta in ofertas %}
+        <article class="tarjeta"><h3>{{ oferta.titulo }}</h3>
+            <p>{{ oferta.get_tipo_display }} · {{ oferta.get_modalidad_horario_display }}</p>
+            <p><strong>Sueldo:</strong> {{ oferta.remuneracion_texto }}</p>
+            <div class="acciones-panel"><a class="boton-enlace boton-secundario" href="{% url 'editar_oferta' oferta.pk %}" aria-label="Editar {{ oferta.titulo }}">Editar</a><a class="enlace-eliminar" href="{% url 'eliminar_oferta' oferta.pk %}" aria-label="Eliminar {{ oferta.titulo }}">Eliminar</a></div>
+        </article>
+    {% empty %}<p>Todavía no tienes ofertas publicadas.</p>{% endfor %}
+    </div>
+    <a href="{% url 'index' %}">Explorar el catálogo</a>
+</section>
+{% endblock %}

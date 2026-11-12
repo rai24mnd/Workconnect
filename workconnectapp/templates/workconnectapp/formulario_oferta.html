@@ -1,0 +1,30 @@
+{% extends 'workconnectapp/base_cuentas.html' %}
+{% load static %}
+{% block titulo %}{% if editando %}Editar oferta{% else %}Publicar oferta{% endif %}{% endblock %}
+{% block clase_pagina %}pagina-oferta{% endblock %}
+{% block contenido %}
+<section class="panel">
+    <h1>{% if editando %}Editar oferta{% else %}Publicar oferta{% endif %}</h1>
+    <form method="post" id="formulario-oferta">
+        {% csrf_token %}
+        {% include 'workconnectapp/campos_cuenta.html' %}
+        <fieldset><legend>Alternativas y bloques de horario</legend>
+            <noscript><p class="aviso">Activa JavaScript para agregar y eliminar alternativas o bloques de horario.</p></noscript>
+            <p class="ayuda">Fijo: una alternativa completa y todos sus bloques obligatorios. Varias opciones: al menos dos alternativas completas; basta cumplir una, sin combinar bloques de opciones distintas. Flexible: no envía bloques y requiere acuerdo con la empresa.</p>
+            <p class="ayuda">Cada bloque debe terminar el mismo día. Para quitar un bloque, marca su casilla de eliminación.</p>
+            <p class="ayuda">Al cambiar de modalidad conservamos los horarios como borrador mientras permanezcas en esta página. Solo se guardarán los que queden visibles. Puedes agregar hasta 20 alternativas y 50 bloques por alternativa.</p>
+            {{ editor.cantidad }}
+            {% for error in editor.errores %}<p class="error-resumen" role="alert">{{ error }}</p>{% endfor %}
+            <div id="alternativas-horario">
+                {% for alternativa in editor.alternativas %}{% include 'workconnectapp/bloques_alternativa.html' with numero=forloop.counter %}{% endfor %}
+            </div>
+            <template id="alternativa-vacia">{% include 'workconnectapp/bloques_alternativa.html' with alternativa=editor.vacia numero=1 %}</template>
+            <button type="button" id="agregar-alternativa" hidden>Agregar alternativa</button>
+            <p id="estado-editor-horarios" class="ayuda" role="status" aria-live="polite"></p>
+        </fieldset>
+        <button type="submit" class="boton-ancho">Guardar oferta</button>
+    </form>
+    <p><a href="{% url 'panel_empresa' %}">Volver al panel</a></p>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{% static 'workconnectapp/ofertas.js' %}"></script>{% endblock %}

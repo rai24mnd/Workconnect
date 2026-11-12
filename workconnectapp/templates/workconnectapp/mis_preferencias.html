@@ -1,0 +1,18 @@
+{% extends 'workconnectapp/base_cuentas.html' %}
+{% load static %}
+{% block titulo %}Mis preferencias{% endblock %}
+{% block contenido %}
+<section class="panel">
+    <h1>Mis preferencias</h1>
+    <p>Los cambios que guardes quedan asociados únicamente a tu cuenta.</p>
+    <p class="ayuda">Completa tus datos y al menos un día disponible. «Guardar cambios» conserva el perfil; «Guardar y ver recomendaciones» también abre tus resultados.</p>
+    <form method="post" action="{% url 'mis_preferencias' %}">
+        {% csrf_token %}
+        {% include 'workconnectapp/campos_perfil.html' %}
+        <button type="submit" name="accion" value="guardar" class="boton-ancho">Guardar cambios</button>
+        <button type="submit" name="accion" value="guardar_recomendar" class="boton-secundario boton-ancho">Guardar y ver recomendaciones</button>
+    </form>
+    <p><a href="{% url 'recomendaciones_guardadas' %}">Ver recomendaciones con mis preferencias guardadas</a></p>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{% static 'workconnectapp/app.js' %}"></script>{% endblock %}

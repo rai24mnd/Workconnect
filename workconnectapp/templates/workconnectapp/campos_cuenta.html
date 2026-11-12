@@ -1,0 +1,15 @@
+<p class="ayuda">Los campos marcados con * son obligatorios. Revisa las indicaciones de cada campo.</p>
+{% if formulario.errors %}<div class="error-resumen" role="alert"><strong>Revisa los campos indicados antes de continuar.</strong>{{ formulario.non_field_errors }}</div>{% endif %}
+{% for campo in formulario %}
+    {% if campo.name == 'tipo' and ocultar_tipo %}
+        {{ campo.as_hidden }}{{ campo.errors }}
+    {% elif campo.widget_type == 'radioselect' or campo.widget_type == 'checkboxselectmultiple' %}
+        <fieldset class="campo"><legend>{{ campo.label }}{% if campo.field.required %} <span aria-label="obligatorio">*</span>{% endif %}</legend>{{ campo }}
+            {% if campo.help_text %}<div class="ayuda" id="{{ campo.auto_id }}_helptext">{{ campo.help_text }}</div>{% endif %}{{ campo.errors }}
+        </fieldset>
+    {% else %}
+        <div class="campo"><label for="{{ campo.id_for_label }}">{{ campo.label }}{% if campo.field.required %} <span aria-label="obligatorio">*</span>{% endif %}</label>{{ campo }}
+            {% if campo.help_text %}<div class="ayuda" id="{{ campo.auto_id }}_helptext">{{ campo.help_text }}</div>{% endif %}{{ campo.errors }}
+        </div>
+    {% endif %}
+{% endfor %}

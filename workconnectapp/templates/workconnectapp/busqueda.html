@@ -1,0 +1,25 @@
+<form method="get" action="{% url 'index' %}#resultados" class="buscador" aria-label="Buscar y filtrar oportunidades">
+    <label class="etiqueta-busqueda" for="{{ busqueda_form.q.id_for_label }}">Buscar oportunidades</label>
+    <div class="barra-busqueda"><svg class="lupa-busqueda" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg>{{ busqueda_form.q }}</div>
+    <button type="submit" class="boton-buscar">Buscar</button>
+    <button type="button" class="alternar-filtros" data-alternar-filtros aria-label="Filtros de oportunidades" aria-controls="panel-filtros" aria-expanded="true" hidden>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg><span>Filtros</span>
+    </button>
+    <div class="acciones-busqueda">{{ busqueda_form.q.errors }}<a href="{% url 'index' %}{% if sin_busqueda %}?{{ sin_busqueda }}{% endif %}#resultados">Borrar búsqueda</a></div>
+    <section id="panel-filtros" class="panel filtros-catalogo" aria-labelledby="titulo-filtros" data-abierto="{% if filtros_abiertos %}true{% else %}false{% endif %}">
+            <h3 id="titulo-filtros">Filtros del catálogo</h3>
+            <p class="ayuda">Son temporales y no cambian tus preferencias guardadas. Encontrar una oferta no garantiza compatibilidad con tu perfil.</p>
+            {{ busqueda_form.non_field_errors }}
+            {% for campo in busqueda_form %}
+                {% if campo.name == 'comuna' or campo.name == 'modalidad' or campo.name == 'experiencia_estado' or campo.name == 'experiencia' or campo.name == 'estudios' or campo.name == 'intereses' or campo.name == 'sin_experiencia' %}
+                    {% if campo.name == 'intereses' %}<fieldset class="campo"><legend>{{ campo.label }}</legend>{{ campo }}<p class="ayuda">{{ campo.help_text }}</p>{{ campo.errors }}</fieldset>
+                    {% else %}<div class="campo"><label for="{{ campo.id_for_label }}">{{ campo.label }}</label>{{ campo }}<p class="ayuda">{{ campo.help_text }}</p>{{ campo.errors }}</div>{% endif %}
+                {% endif %}
+            {% endfor %}
+            <fieldset class="campo"><legend>Disponibilidad horaria</legend>
+                <p class="ayuda">Opcional: marca días y rangos para cubrir todos los bloques de un horario fijo o una alternativa completa. Las ofertas flexibles requieren acuerdo y se excluyen al aplicar este filtro.</p>
+                {% include 'workconnectapp/campos_horario.html' with formulario=busqueda_form mostrar_errores=True %}
+            </fieldset>
+            <div class="acciones-panel"><button type="submit">Aplicar filtros</button><a href="{% url 'index' %}{% if solo_busqueda %}?{{ solo_busqueda }}{% endif %}#resultados">Limpiar filtros</a></div>
+    </section>
+</form>

@@ -1,0 +1,10 @@
+{% extends 'workconnectapp/base_cuentas.html' %}
+{% block titulo %}Eliminar oferta{% endblock %}
+{% block contenido %}
+<section class="panel">
+    <h1>Eliminar oferta</h1>
+    <p>¿Quieres eliminar «{{ oferta.titulo }}» y sus horarios? Esta acción no se puede deshacer.</p>
+    <form method="post">{% csrf_token %}<button type="submit">Confirmar eliminación</button></form>
+    <p><a href="{% url 'panel_empresa' %}">Cancelar y volver</a></p>
+</section>
+{% endblock %}

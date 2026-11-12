@@ -1,0 +1,36 @@
+<nav class="navegacion-cuenta" aria-label="Cuenta">
+    {% with pagina=request.resolver_match.url_name %}
+    {% if user.is_authenticated %}
+        <div class="enlaces-principales">
+        {% if user.cuenta.tipo == 'empresa' %}
+            <a href="{% url 'panel_empresa' %}"{% if pagina == 'panel_empresa' %} aria-current="page"{% endif %}>Panel empresarial</a>
+            <a href="{% url 'crear_oferta' %}"{% if pagina == 'crear_oferta' %} aria-current="page"{% endif %}>Publicar oferta</a>
+        {% elif user.cuenta.tipo == 'joven' %}
+            <a href="{% url 'index' %}"{% if pagina == 'index' %} aria-current="page"{% endif %}>Catálogo</a>
+            <a href="{% url 'recomendaciones_guardadas' %}"{% if pagina == 'recomendaciones_guardadas' %} aria-current="page"{% endif %}>Mis recomendaciones</a>
+        {% endif %}
+        </div>
+        <details class="menu-usuario" data-menu-usuario>
+            <summary aria-label="Menú de usuario: {{ user.username }}" aria-controls="opciones-usuario">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>
+            </summary>
+            <div id="opciones-usuario" class="opciones-usuario">
+                <p class="cuenta-usuario">Sesión: {{ user.username }}</p>
+                <ul>
+                    {% if user.cuenta.tipo == 'joven' %}
+                        <li><a href="{% url 'mi_perfil' %}"{% if pagina == 'mi_perfil' %} aria-current="page"{% endif %}>Mi perfil</a></li>
+                        <li><a href="{% url 'mis_preferencias' %}"{% if pagina == 'mis_preferencias' %} aria-current="page"{% endif %}>Editar mis preferencias</a></li>
+                    {% elif user.cuenta.tipo == 'empresa' %}
+                        <li><a href="{% url 'perfil_empresa' %}"{% if pagina == 'perfil_empresa' %} aria-current="page"{% endif %}>Mi perfil empresarial</a></li>
+                        <li><a href="{% url 'panel_empresa' %}"{% if pagina == 'panel_empresa' %} aria-current="page"{% endif %}>Administrar ofertas</a></li>
+                    {% endif %}
+                    <li><form method="post" action="{% url 'cerrar_sesion' %}">{% csrf_token %}<button type="submit" class="boton-texto">Cerrar sesión</button></form></li>
+                </ul>
+            </div>
+        </details>
+    {% else %}
+        <a href="{% url 'registro' %}"{% if pagina == 'registro' %} aria-current="page"{% endif %}>Crear cuenta</a>
+        <a href="{% url 'iniciar_sesion' %}"{% if pagina == 'iniciar_sesion' %} aria-current="page"{% endif %}>Iniciar sesión</a>
+    {% endif %}
+    {% endwith %}
+</nav>

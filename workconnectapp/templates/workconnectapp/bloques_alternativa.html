@@ -1,0 +1,10 @@
+<div class="alternativa-horario">
+    <h3>Alternativa <span data-numero-alternativa>{{ numero }}</span></h3>
+    {{ alternativa.management_form }}{{ alternativa.non_form_errors }}
+    <div data-bloques>
+        {% for bloque in alternativa %}<div class="bloque-oferta">{{ bloque.as_p }}<p class="ayuda" data-estado-bloque role="status"></p></div>{% endfor %}
+    </div>
+    <template data-bloque-vacio><div class="bloque-oferta">{{ alternativa.empty_form.as_p }}<p class="ayuda" data-estado-bloque role="status"></p></div></template>
+    <button type="button" data-agregar-bloque hidden>Agregar bloque</button>
+    <button type="button" data-eliminar-alternativa class="boton-texto" hidden>Eliminar alternativa</button>
+</div>
